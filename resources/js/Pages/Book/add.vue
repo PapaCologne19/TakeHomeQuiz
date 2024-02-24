@@ -83,7 +83,6 @@ const storeBook = () => {
                   type="file"
                   class="w-full mt-1 block pt-5"
                   @input="form.image = $event.target.files[0]"
-                  required
                   autocomplete="image"
                 />
                 <InputError class="mt-2" :message="form.errors.image" />

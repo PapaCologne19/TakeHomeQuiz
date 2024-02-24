@@ -20,9 +20,10 @@ const form = useForm({
   book_title: props.books.book_title,
   date_published: props.books.date_published,
   authors: props.authors.author_name,
-  author: props.books.author_name,
-  author_id: props.books.author_id,
+  author: props.books.authors[0].author_name,
+  author_id: props.books.authors[0].id,
   images: props.books.filename,
+  image: null,
 });
 
 const update = () => {
@@ -31,11 +32,9 @@ const update = () => {
     book_title: form.book_title,
     date_published: form.date_published,
     author_id: form.author_id,
-    image: form.images,
+    image: form.image,
   });
 };
-
-console.log(form.images);
 </script>
 <template>
   <Head title="Update Book" />
@@ -82,6 +81,7 @@ console.log(form.images);
 
               <div class="mt-4">
                 <InputLabel for="author" value="Author" />
+
                 <select
                   id="author"
                   class="w-full mt-1 block border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
@@ -98,7 +98,9 @@ console.log(form.images);
               <div class="mt-4">
                 <InputLabel for="image" value="Image" />
                 <img
-                  :src="getImageUrl(form.images)"
+                  v-for="image in books.images"
+                  :key="image.id"
+                  :src="getImageUrl(image.filename)"
                   alt="Book Image"
                   class="w-24 h-24 object-cover rounded-lg"
                 />
@@ -107,10 +109,11 @@ console.log(form.images);
                   id="image"
                   type="file"
                   class="w-full mt-1 block"
-                  @change="form.images = event.target.files[0]"
+                  @input="form.image = $event.target.files[0]"
                   autocomplete="image"
                 />
-                <InputError class="mt-2" :message="form.errors.images" />
+
+                <InputError class="mt-2" :message="form.errors.image" />
               </div>
 
               <div class="mt-6">

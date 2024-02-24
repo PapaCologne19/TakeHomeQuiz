@@ -12,7 +12,7 @@ class AuthorController extends Controller
 {
     public function showAuthor()
     {
-        $authors = Author::with('images')->get();
+        $authors = Author::with(['books', 'images'])->get();
         return Inertia::render('Author/index', [
             'authors' => $authors,
             'links' => [

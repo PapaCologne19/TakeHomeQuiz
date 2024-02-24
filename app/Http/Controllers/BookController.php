@@ -15,15 +15,9 @@ class BookController extends Controller
 {
     public function showBook()
     {
-        $authors = DB::table('books')
-            ->join('authors', 'authors.id', '=', 'books.author_id')
-            ->join('images', 'books.id', '=', 'images.transactionable_id')
-            ->where('images.transactionable_type', 'App\Models\Book')
-            ->select('books.*', 'authors.author_name', 'images.filename')
-            ->get();
-
+        $books = Book::with(['authors', 'images'])->get();
         return Inertia::render('Book/index', [
-            'books' => $authors,
+            'books' => $books,
             'links' => [
                 public_path('storage') => storage_path('app/public/images')
             ]
@@ -46,8 +40,9 @@ class BookController extends Controller
         $book = new Book();
         $book->book_title = $request['book_title'];
         $book->date_published = $request['date_published'];
-        $book->author_id = $request['author_id'];
         $book->save();
+
+        $book->authors()->attach($request['author_id']);
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -60,21 +55,13 @@ class BookController extends Controller
 
             return redirect(route('book.showBook'))->with('success', 'The book has been added!');
         } else {
-            return redirect(route('book.showBook'))->with('error', 'The book is not added!');
+            return redirect(route('book.showBook'))->with('success', 'The book has been added!');
         }
-
     }
 
     public function editBook($id)
     {
-        $books = DB::table('books')
-            ->join('authors', 'authors.id', '=', 'books.author_id')
-            ->join('images', 'books.id', '=', 'images.transactionable_id')
-            ->where('books.id', $id)
-            ->where('images.transactionable_type', 'App\Models\Book')
-            ->select('books.*', 'authors.author_name', 'images.filename')
-            ->first();
-
+        $books = Book::with(['authors', 'images'])->findOrFail($id);
         $authors = Author::all();
         return Inertia::render('Book/edit', [
             'books' => $books,
@@ -91,10 +78,11 @@ class BookController extends Controller
     {
         $request->validated();
         $books->update([
-            'author_id' => $request['author_id'],
             'book_title' => $request['book_title'],
             'date_published' => $request['date_published'],
         ]);
+
+        $books->authors()->sync([$request['author_id']]);
 
         // If the updated data has image attached, execute this code
         if ($request->hasFile('image')) {
@@ -109,12 +97,8 @@ class BookController extends Controller
                     ['filename' => $filename]
                 );
             }
-            return redirect(route('book.showBook'))->with('success', 'The book has been updated!');
         }
-        // Else, if the user updated only the data without images, execute this code. 
-        else {
-            return redirect(route('book.showBook'))->with('success', 'The book has been updated!');
-        }
+        return redirect(route('book.showBook'))->with('success', 'The book has been updated!');
     }
 
     public function deleteBook($id)

@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('books', function (Blueprint $table) {
+        Schema::create('author_book', function (Blueprint $table) {
             $table->id();
-            $table->string('book_title');
-            $table->date('date_published');
+            $table->foreignId('author_id')->constrained()->onDelete('cascade');
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('books');
+        Schema::dropIfExists('author_book');
     }
 };

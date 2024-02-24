@@ -81,13 +81,21 @@ const filteredBooks = computed(() => {
                     <td class="px-6 py-4">{{ book.id }}</td>
                     <td class="px-6 py-4">{{ book.book_title }}</td>
                     <td class="px-6 py-4">{{ book.date_published }}</td>
-                    <td class="px-6 py-4">{{ book.author_name }}</td>
                     <td class="px-6 py-4">
-                      <img
-                        :src="getImageUrl(book.filename)"
-                        alt="Book Image"
-                        class="w-24 h-24 object-cover rounded-lg"
-                      />
+                      <template v-for="(author, index) in book.authors" :key="author.id">
+                        <span v-if="index !== 0" class="mx-1">, </span
+                        >{{ author.author_name }}
+                      </template>
+                    </td>
+
+                    <td class="px-6 py-4">
+                      <template v-for="(image) in book.images" :key="image.id">
+                        <img
+                          :src="getImageUrl(image.filename)"
+                          alt="Book Image"
+                          class="w-24 h-24 object-cover rounded-lg"
+                        />
+                      </template>
                     </td>
                     <td>
                       <Link

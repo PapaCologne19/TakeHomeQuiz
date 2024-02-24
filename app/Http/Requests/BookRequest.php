@@ -25,7 +25,7 @@ class BookRequest extends FormRequest
             'author_id' => 'required',
             'book_title' => 'required',
             'date_published' => 'required|date',
-            'image' => $this->hasFile('image') ? 'required|image|mimes:jpg,png,gif,bmp' : 'nullable',
+            'image' => 'nullable|image|mimes:jpg,png,gif,bmp',
         ];
     }
 }
