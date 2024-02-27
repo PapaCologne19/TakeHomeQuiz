@@ -10,6 +10,12 @@ use App\Http\Requests\AuthorRequest;
 
 class AuthorController extends Controller
 {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Showing Authors
+    |--------------------------------------------------------------------------
+    */
     public function showAuthor()
     {
         $authors = Author::with(['books', 'images'])->get();
@@ -21,11 +27,21 @@ class AuthorController extends Controller
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Showing Add Author View
+    |--------------------------------------------------------------------------
+    */
     public function addAuthor()
     {
         return Inertia::render('Author/add');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Storing Author to Database
+    |--------------------------------------------------------------------------
+    */
     public function storeAuthor(AuthorRequest $request)
     {
         $author = new Author();
@@ -49,6 +65,11 @@ class AuthorController extends Controller
         return redirect(route('author.showAuthor'))->with('error', 'The author is not added');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Showing Edit  Author View with Data from DB
+    |--------------------------------------------------------------------------
+    */
     public function editAuthor(Author $authors)
     {
         $authors->load('images');
@@ -60,6 +81,11 @@ class AuthorController extends Controller
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Updating Authors
+    |--------------------------------------------------------------------------
+    */
     public function updateAuthor(Request $request, Author $authors)
     {
         $data = $request->validate([
@@ -90,17 +116,26 @@ class AuthorController extends Controller
         return redirect(route('author.showAuthor'))->with('success', 'The author has been updated!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Deleting Authors based on the ID
+    |--------------------------------------------------------------------------
+    */
     public function deleteAuthor($id)
     {
+        // Finding the Author ID
         $author = Author::findOrFail($id);
+
+        // Deleting the author images first before deleting the author itself
         foreach ($author->books as $book) {
             $book->images()->delete();
             $book->delete();
         }
 
+        // Deleting Author
         $author->delete();
 
-
+        // Return to the index page once the process is success
         return redirect(route('author.showAuthor'))->with('success', 'The author and their associated books have been deleted!');
     }
 

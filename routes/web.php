@@ -29,7 +29,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
 
-    // Route for Books
+    /*
+    |--------------------------------------------------------------------------
+    | Route for Books
+    |--------------------------------------------------------------------------
+    */
     Route::controller(BookController::class)->group(function () {
         Route::name('book.')->group(function () {
             Route::get('/books', 'showBook')->name('showBook');
@@ -41,7 +45,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    // Route for Author
+    /*
+    |--------------------------------------------------------------------------
+    | Route for Author
+    |--------------------------------------------------------------------------
+    */
     Route::controller(AuthorController::class)->group(function () {
         Route::name('author.')->group(function () {
             Route::get('/authors/', 'showAuthor')->name('showAuthor');
@@ -61,4 +69,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

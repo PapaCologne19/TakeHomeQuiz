@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Showing Books
+    |--------------------------------------------------------------------------
+    */
     public function showBook()
     {
         $books = Book::with(['authors', 'images'])->get();
@@ -24,6 +30,11 @@ class BookController extends Controller
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Showing Add Books View
+    |--------------------------------------------------------------------------
+    */
     public function addBook()
     {
         $authors = Author::all();
@@ -32,8 +43,15 @@ class BookController extends Controller
         ]);
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Storing Books to Database
+    |--------------------------------------------------------------------------
+    */
     public function storeBook(BookRequest $request)
     {
+        // Get the Validated Requests from BookRequest Class
         $request->validated();
 
         // Get the book image and save it to the server
@@ -52,13 +70,15 @@ class BookController extends Controller
             $imageModel = new Image();
             $imageModel->filename = $filename;
             $book->images()->save($imageModel);
-
-            return redirect(route('book.showBook'))->with('success', 'The book has been added!');
-        } else {
-            return redirect(route('book.showBook'))->with('success', 'The book has been added!');
         }
+        return redirect(route('book.showBook'))->with('success', 'The book has been added!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Showing Edit Book View
+    |--------------------------------------------------------------------------
+    */
     public function editBook($id)
     {
         $books = Book::with(['authors', 'images'])->findOrFail($id);
@@ -74,6 +94,11 @@ class BookController extends Controller
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Updating Book
+    |--------------------------------------------------------------------------
+    */
     public function updateBook(BookRequest $request, Book $books)
     {
         $request->validated();
@@ -91,6 +116,7 @@ class BookController extends Controller
             $image->storeAs('public/images', $filename);
 
             if ($books->images()) {
+
                 // Update the filename of the existing image
                 $books->images()->updateOrCreate(
                     [],
@@ -101,6 +127,11 @@ class BookController extends Controller
         return redirect(route('book.showBook'))->with('success', 'The book has been updated!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Method for Deleting Books
+    |--------------------------------------------------------------------------
+    */
     public function deleteBook($id)
     {
         $book = Book::findOrFail($id);
